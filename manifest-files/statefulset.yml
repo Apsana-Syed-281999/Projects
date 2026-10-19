@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: blood-bank-statefulset
+spec:
+  serviceName: "mysqldb"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blood-bank-db
+  template:
+    metadata:
+      labels:
+        app: blood-bank-db
+    spec:
+      containers:
+      - name: blood-bank
+        image: apsanadevops/bloodbank:dbimg
+        ports:
+        - containerPort: 3306
+        envFrom:
+        - configMapRef:
+            name: blood-bank-config
+        - secretRef:
+            name: blood-bank-secret
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: blood-bank-storage
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: blood-bank-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
