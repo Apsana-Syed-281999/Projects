@@ -3,7 +3,7 @@ pipeline {
     stages{
         stage("code"){
             steps{
-                git 'https://github.com/Apsana-Syed-281999/ltibbhackathon.git'
+                git branch: 'Blood-Bank', url: 'https://github.com/Apsana-Syed-281999/Projects.git'
             }
         }
         stage("CQA"){
