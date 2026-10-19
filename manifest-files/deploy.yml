@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: blood-bank
-        image: apsanadevops/bloodbank:appimg
+        image: apsanadevops/bloodbank:appimg    #### img is wrong ###
         ports:
         - containerPort: 80
         envFrom:
