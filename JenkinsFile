@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+    stages{
+        stage("code"){
+            steps{
+                git 'https://github.com/Apsana-Syed-281999/ltibbhackathon.git'
+            }
+        }
+        stage("CQA"){
+                environment{
+                    scannerHome = tool 'mySonar'
+                }
+
+            steps{
+                 withSonarQubeEnv('mySonar') {
+                sh '''
+                 ${scannerHome}/bin/sonar-scanner \
+                 -Dsonar.projectKey=My_Sonar_Project \
+                 -Dsonar.sources=. \
+                '''
+                }
+            }
+        }
+        stage("Quality-Gates"){
+            steps{
+                waitForQualityGate abortPipeline: true, credentialsId: 'sonar-credentials'
+            }
+        }
+        stage("Images"){
+            steps{
+                sh 'docker build -t dbimg ./database'
+                sh 'docker build -t appimg .'
+            }
+        }
+        stage("Scan"){
+            steps{
+                sh 'trivy image dbimg >> db.txt '
+                sh 'trivy image appimg >> app.txt'
+            }
+        }
+        stage("Tag"){
+            steps{
+                sh 'docker tag dbimg apsanadevops/bloodbank:dbimg'
+                sh 'docker tag appimg apsanadevops/bloodbank:appimg'
+            }
+        }
+        stage("Push"){
+            steps{
+                script {
+                    withDockerRegistry(credentialsId: 'docker-credentials') {
+                       sh 'docker push apsanadevops/bloodbank:dbimg'
+                       sh 'docker push apsanadevops/bloodbank:appimg'
+                    }
+                }
+            }
+        }
+        stage("Deploy"){
+            steps{
+                sh 'docker-compose up -d'
+            }
+        }
+    }
+}
