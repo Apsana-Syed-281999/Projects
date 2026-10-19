@@ -9,10 +9,11 @@ spec:
   rules:
     - http:
         paths:
-       - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: blood-bank-app-service
-              port:
-                number: 80
+         - path: /
+           pathType: Prefix
+            backend:
+              service:
+                name: blood-bank-app-service
+                port:
+                  number: 80
+
