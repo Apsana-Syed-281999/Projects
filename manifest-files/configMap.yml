@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: blood-bank-config
 data:
-  MYSQL_DATABASE: "customers"
-  MYSQL_PORT: "3306"
+  DB_DATABASE: "customers"
+  DB_PORT: "3306"
 
